@@ -4,10 +4,12 @@
 #define DIR_PIN2 4
 #define STEP_PIN2 5
 #define BAUD_RATE 9600
-#define BOARD_X 10
-#define BOARD_Y 8
+#define BOARD_X 185
+#define BOARD_Y 125
+#define STEPS_PER_MM 88.89
 
-int x = 10, y = 50;
+float currentX = 0;
+float currentY = 0;
 
 void setup() {
   Serial.begin(BAUD_RATE);
@@ -25,16 +27,22 @@ void spinSteppa(int motorDir, int motorStep, bool dir){
   delayMicroseconds(800);
 }
 
-void moveCoreXY(int xSteps, int ySteps)
+void moveCoreXY(int targetX, int targetY)
 {
-  int stepsA = xSteps + ySteps;
-  int stepsB = xSteps - ySteps;
+  float motorA_current = (currentX + currentY) * STEPS_PER_MM;
+  float motorB_current = (currentX - currentY) * STEPS_PER_MM;
 
-  bool dirA = stepsA >= 0;
-  bool dirB = stepsB >= 0;
+  float stepsA = (targetX + targetY)*STEPS_PER_MM;
+  float stepsB = (targetX - targetY)*STEPS_PER_MM;
 
-  stepsA = abs(stepsA);
-  stepsB = abs(stepsB);
+  int deltaA = round(stepsA - motorA_current);
+  int deltaB = round(stepsB - motorB_current);
+
+  bool dirA = deltaA >= 0;
+  bool dirB = deltaB >= 0;
+
+  deltaA = abs(stepsA);
+  deltaB = abs(stepsB);
 
   int maxSteps = max(stepsA, stepsB);
 
@@ -46,8 +54,12 @@ void moveCoreXY(int xSteps, int ySteps)
       spinSteppa(DIR_PIN2, STEP_PIN2, dirB);
     }
   }
+
+  currentX = stepsA;
+  currentY = stepsB;
+
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
+  moveCoreXY(100, 50);
 }
