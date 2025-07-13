@@ -4,6 +4,10 @@
 #define DIR_PIN2 4
 #define STEP_PIN2 5
 #define BAUD_RATE 9600
+#define MOTOR_STEPS_PER_REV 200
+#define MICROSTEPS = 16
+#define PULLEY_TEETH 12
+#define BELT_PITCH 3
 #define BOARD_X 185
 #define BOARD_Y 125
 #define STEPS_PER_MM 88.89
